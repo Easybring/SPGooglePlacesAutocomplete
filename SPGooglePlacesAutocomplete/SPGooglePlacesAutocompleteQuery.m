@@ -84,13 +84,15 @@
 }
 
 - (void)fetchPlaces:(SPGooglePlacesAutocompleteResultBlock)block {
-    if (!SPEnsureGoogleAPIKey()) {
+    if (!self.key) {
+        NSLog(@"no key");
         return;
     }
     
     if (SPIsEmptyString(self.input)) {
         // Empty input string. Don't even bother hitting Google.
-        block([NSArray array], nil);
+        block(@[], nil);
+        NSLog(@"empty string");
         return;
     }
     
@@ -98,8 +100,12 @@
     self.resultBlock = block;
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[self googleURLString]]];
-    googleConnection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
+    NSLog(@"url: %@", [self googleURLString]);
+    googleConnection = [[NSURLConnection alloc] initWithRequest:request delegate:self startImmediately:NO];
     responseData = [[NSMutableData alloc] init];
+    [googleConnection scheduleInRunLoop:[NSRunLoop mainRunLoop]
+                          forMode:NSDefaultRunLoopMode];
+    [googleConnection start];
 }
 
 #pragma mark -
