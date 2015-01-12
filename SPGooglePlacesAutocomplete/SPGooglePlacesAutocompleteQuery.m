@@ -86,9 +86,11 @@
     [self cancelOutstandingRequests];
     self.resultBlock = block;
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[self googleURLString]]];
-    googleConnection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
-    responseData = [[NSMutableData alloc] init];
+    NSLog(@"url: %@", [self googleURLString]);
+    googleConnection = [[NSURLConnection alloc] initWithRequest:request delegate:self startImmediately:NO];
+    responseData = [[NSMutableData alloc] init];            
+    [googleConnection scheduleInRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
+    [googleConnection start];
 }
 
 #pragma mark -
